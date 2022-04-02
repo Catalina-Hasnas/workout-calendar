@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
+import Calendar from "../components/Calendar/Calendar";
 
 const Home: NextPage = () => {
   return (
@@ -11,7 +12,9 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}></main>
+      <main className={styles.main}>
+        <Calendar />
+      </main>
     </div>
   );
 };
