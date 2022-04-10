@@ -1,13 +1,14 @@
-import { IDay } from "./Calendar";
-
-// interface IDayProps extends IDay {
-
-// }
-
-const Day = ({ dayOfTheWeek, date, month }: IDay) => {
+const Day = ({ date }: { date: number }) => {
   return (
-    <div className="p-6 flex justify-center border border-zinc-300">
-      <p>{date}</p>
+    <div
+      className={
+        "pb-16 pt-2 px-2 flex justify-end items-start border border-zinc-200 " +
+        (date === 99 && "disabledPattern")
+      }
+    >
+      {date !== 99 && (
+        <p className="text-sm text-sky-700 tracking-widest">{date}</p>
+      )}
     </div>
   );
 };

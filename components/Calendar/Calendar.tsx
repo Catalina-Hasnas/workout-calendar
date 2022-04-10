@@ -17,8 +17,8 @@ dayjs.extend(duration);
 // );
 
 export interface IDay {
+  date: number;
   dayOfTheWeek?: number;
-  date?: number;
   month?: number;
 }
 
@@ -47,7 +47,9 @@ const Calendar = () => {
       days[0].dayOfTheWeek === 0 ? 6 : (days[0].dayOfTheWeek as number) - 1;
 
     for (let i = 0; i < daysOfPrevMonth; i++) {
-      days.unshift({});
+      days.unshift({
+        date: 99,
+      });
     }
 
     return days;
@@ -66,25 +68,32 @@ const Calendar = () => {
   ];
 
   return (
-    <main className="p-16 flex justify-center items-center">
-      <div className="max-w-screen-xl m-auto bg-zinc-50">
-        <CalendarHeader
-          currentMonth={currentMonth}
-          setCurrentMonth={setCurrentMonth}
-        />
-        <div className="w-full grid grid-cols-7 gap-0">
-          {dayNames.map((day, index) => {
-            return (
-              <div className="p-6 flex justify-center border border-zinc-300">
-                <p key={index}>{day}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="w-full grid grid-cols-7 gap-0">
-          {daysInMonth.map((dayInMonth, index) => {
-            return <Day key={index} {...dayInMonth} />;
-          })}
+    <main className="backgroundPattern flex justify-center items-center h-screen">
+      <div className="max-w-screen-xl m-auto bg-white">
+        <div className="rounded-sm shadow-all-sides shadow-sky-300">
+          <CalendarHeader
+            currentMonth={currentMonth}
+            setCurrentMonth={setCurrentMonth}
+          />
+          <div className="w-full grid grid-cols-7 gap-0">
+            {dayNames.map((day, index) => {
+              return (
+                <div className="p-6 flex justify-center items-center border-y border-sky-700 hover:bg-sky-700 text-sky-700 hover:text-white">
+                  <p
+                    className="text-sm uppercase tracking-wide text-center"
+                    key={index}
+                  >
+                    {day}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="w-full grid grid-cols-7 gap-0">
+            {daysInMonth.map((dayInMonth, index) => {
+              return <Day key={index} date={dayInMonth.date} />;
+            })}
+          </div>
         </div>
       </div>
     </main>
