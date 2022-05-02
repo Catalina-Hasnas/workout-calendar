@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import Day from "./Day";
 import CalendarHeader from "./CalendarHeader";
+import { dayNames } from "../utils";
 
 dayjs.extend(duration);
 
@@ -18,8 +19,8 @@ dayjs.extend(duration);
 
 export interface IDay {
   date: number;
-  dayOfTheWeek?: number;
-  month?: number;
+  dayOfTheWeek: number;
+  month: number;
 }
 
 const Calendar = () => {
@@ -49,6 +50,8 @@ const Calendar = () => {
     for (let i = 0; i < daysOfPrevMonth; i++) {
       days.unshift({
         date: 99,
+        month: 99,
+        dayOfTheWeek: 99,
       });
     }
 
@@ -57,20 +60,10 @@ const Calendar = () => {
 
   const daysInMonth = getDaysInMonth(2022, currentMonth);
 
-  const dayNames = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thrusday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-
   return (
-    <main className="backgroundPattern flex justify-center items-center h-screen">
+    <main className="flex justify-center items-center h-screen">
       <div className="max-w-screen-xl m-auto bg-white">
-        <div className="rounded-sm shadow-all-sides shadow-sky-300">
+        <div className="rounded-sm shadow-all-sides shadow-indigo-300">
           <CalendarHeader
             currentMonth={currentMonth}
             setCurrentMonth={setCurrentMonth}
@@ -78,20 +71,20 @@ const Calendar = () => {
           <div className="w-full grid grid-cols-7 gap-0">
             {dayNames.map((day, index) => {
               return (
-                <div className="p-6 flex justify-center items-center border-y border-sky-700 hover:bg-sky-700 text-sky-700 hover:text-white">
-                  <p
-                    className="text-sm uppercase tracking-wide text-center"
-                    key={index}
-                  >
+                <div
+                  key={index}
+                  className="p-6 flex justify-center items-center border-y border-sky-700 hover:bg-sky-700 text-sky-700 hover:text-white"
+                >
+                  <p className="text-sm uppercase tracking-wide text-center">
                     {day}
                   </p>
                 </div>
               );
             })}
           </div>
-          <div className="w-full grid grid-cols-7 gap-0">
+          <div className="w-full grid grid-cols-7 gap-0 overflow-hidden">
             {daysInMonth.map((dayInMonth, index) => {
-              return <Day key={index} date={dayInMonth.date} />;
+              return <Day key={index} {...dayInMonth} />;
             })}
           </div>
         </div>

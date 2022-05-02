@@ -1,15 +1,25 @@
-const Day = ({ date }: { date: number }) => {
+import Link from "next/link";
+import { IDay } from "./Calendar";
+
+const Day = ({ date, dayOfTheWeek, month }: IDay) => {
   return (
-    <div
-      className={
-        "pb-16 pt-2 px-2 flex justify-end items-start border border-zinc-200 " +
-        (date === 99 && "disabledPattern")
-      }
+    <Link
+      href={{
+        pathname: "/day/[date]",
+        query: { date: date, month: month, dayOfTheWeek: dayOfTheWeek },
+      }}
     >
-      {date !== 99 && (
-        <p className="text-sm text-sky-700 tracking-widest">{date}</p>
-      )}
-    </div>
+      <div
+        className={
+          "pb-16 pt-2 px-2 flex justify-end items-start border border-zinc-200 " +
+          (date === 99 && "disabledPattern")
+        }
+      >
+        {date !== 99 && (
+          <p className="text-sm text-sky-700 tracking-widest">{date}</p>
+        )}
+      </div>
+    </Link>
   );
 };
 
