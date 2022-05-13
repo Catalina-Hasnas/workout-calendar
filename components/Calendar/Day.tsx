@@ -5,19 +5,16 @@ const Day = ({ date, dayOfTheWeek, month }: IDay) => {
   return (
     <Link
       href={{
-        pathname: "/day/[date]",
+        pathname: "/day",
         query: { date: date, month: month, dayOfTheWeek: dayOfTheWeek },
       }}
     >
       <div
         className={
-          "pb-16 pt-2 px-2 flex justify-end items-start border border-zinc-200 " +
-          (date === 99 && "disabledPattern")
+          "pb-16 pt-2 px-2 flex justify-end items-start border border-zinc-200"
         }
       >
-        {date !== 99 && (
-          <p className="text-sm text-sky-700 tracking-widest">{date}</p>
-        )}
+        <p className="text-sm text-sky-700 tracking-widest">{date}</p>
       </div>
     </Link>
   );

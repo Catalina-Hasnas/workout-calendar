@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import DayHeader from "../../../components/Day/DayHeader";
+import DayHeader from "../../components/Day/DayHeader";
 
 const Day: NextPage = () => {
   const router = useRouter();

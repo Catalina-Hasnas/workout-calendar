@@ -1,21 +1,10 @@
 import { useState } from "react";
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
 import Day from "./Day";
 import CalendarHeader from "./CalendarHeader";
 import { dayNames } from "../utils";
-
-dayjs.extend(duration);
-
-//   const some = dayjs().add(dayjs.duration({ days: 1 }));
-
-// const groupedByDayOfWeek: any[] = Object.values(
-//   days.reduce((acc, item) => {
-//     // Append the item to the array for each country
-//     acc[item.$W] = [...(acc[item.$W] || []), item];
-//     return acc;
-//   }, {})
-// );
+import DayFromPreviousMonth from "./DayFromPreviousMonth";
+import weekday from "dayjs/plugin/weekday";
 
 export interface IDay {
   date: number;
@@ -23,8 +12,11 @@ export interface IDay {
   month: number;
 }
 
+dayjs.extend(weekday);
+
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState(dayjs().month());
+
   function getDaysInMonth(year: number, month: number) {
     let day = 0;
     let days: IDay[] = [];
@@ -39,23 +31,16 @@ const Calendar = () => {
       day++;
       days.push({
         date: dayjs().year(year).month(month).date(day).date(),
-        dayOfTheWeek: dayjs().year(year).month(month).date(day).day(),
+        dayOfTheWeek: dayjs().year(year).month(month).date(day).weekday(),
         month: dayjs().year(year).month(month).date(day).month(),
       });
     }
 
-    const daysOfPrevMonth =
-      days[0].dayOfTheWeek === 0 ? 6 : (days[0].dayOfTheWeek as number) - 1;
+    const daysOfPrevMonth = days[0].dayOfTheWeek;
 
-    for (let i = 0; i < daysOfPrevMonth; i++) {
-      days.unshift({
-        date: 99,
-        month: 99,
-        dayOfTheWeek: 99,
-      });
-    }
+    const daysOfPrevMonthArray = Array.from(Array(daysOfPrevMonth));
 
-    return days;
+    return { days, daysOfPrevMonthArray };
   }
 
   const daysInMonth = getDaysInMonth(2022, currentMonth);
@@ -83,7 +68,10 @@ const Calendar = () => {
             })}
           </div>
           <div className="w-full grid grid-cols-7 gap-0 overflow-hidden">
-            {daysInMonth.map((dayInMonth, index) => {
+            {daysInMonth.daysOfPrevMonthArray.map((_, index) => {
+              return <DayFromPreviousMonth key={index} />;
+            })}
+            {daysInMonth.days.map((dayInMonth, index) => {
               return <Day key={index} {...dayInMonth} />;
             })}
           </div>

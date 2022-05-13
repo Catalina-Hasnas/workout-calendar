@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
 import { getMonthName, dayNames, getOrdinal } from "../utils";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 interface IDayHeaderProps {
   currentDate: number;
@@ -16,9 +17,9 @@ const DayHeader = ({
   currentDayOfTheWeek,
   isReady,
 }: IDayHeaderProps) => {
-  const [day, setCurrentDay] = useState(99);
-  const [month, setCurrentMonth] = useState(99);
-  const [dayOfTheWeek, setDateOfTheWeek] = useState(99);
+  const [day, setCurrentDay] = useState(0);
+  const [month, setCurrentMonth] = useState(0);
+  const [dayOfTheWeek, setDateOfTheWeek] = useState(0);
 
   useEffect(() => {
     if (isReady) {
@@ -32,21 +33,37 @@ const DayHeader = ({
     month
   )} ${getOrdinal(day)} `;
 
-  const monthDigit = month + 1 < 10 ? `0${month + 1}` : `${month + 1}`;
-
-  const daysInMonthString = `2022-${monthDigit}-01`;
-
-  const daysInMonth = dayjs(daysInMonthString).daysInMonth();
+  const getDaysInMonth = (month: number) => {
+    const monthDigit = month + 1 < 10 ? `0${month + 1}` : `${month + 1}`;
+    const daysInMonthString = `2022-${monthDigit}-01`;
+    return dayjs(daysInMonthString).daysInMonth();
+  };
 
   const handlePreviousChange = () => {
     setCurrentDay(day - 1);
+    if (day === 1) {
+      setCurrentMonth(month - 1);
+      setCurrentDay(getDaysInMonth(month - 1));
+    }
     setDateOfTheWeek(dayOfTheWeek - 1);
+    if (dayOfTheWeek === 0) {
+      setDateOfTheWeek(6);
+    }
   };
 
   const handleNextChange = () => {
     setCurrentDay(day + 1);
+    if (day === getDaysInMonth(month)) {
+      setCurrentMonth(month + 1);
+      setCurrentDay(1);
+    }
     setDateOfTheWeek(dayOfTheWeek + 1);
+    if (dayOfTheWeek === 6) {
+      setDateOfTheWeek(0);
+    }
   };
+
+  console.log({ day: day, month: month, dayOfTheWeek: dayOfTheWeek });
 
   return (
     <div className="max-w-screen-xl m-auto bg-white">
