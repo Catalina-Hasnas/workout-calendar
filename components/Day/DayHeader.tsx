@@ -1,82 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid";
 import { getMonthName, dayNames, getOrdinal } from "../utils";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import weekday from "dayjs/plugin/weekday";
 
-interface IDayHeaderProps {
-  currentDate: number;
-  currentMonth: number;
-  currentDayOfTheWeek: number;
-  isReady: boolean;
-}
+dayjs.extend(weekday);
 
-const DayHeader = ({
-  currentDate,
-  currentMonth,
-  currentDayOfTheWeek,
-  isReady,
-}: IDayHeaderProps) => {
-  const [day, setCurrentDay] = useState(0);
-  const [month, setCurrentMonth] = useState(0);
-  const [dayOfTheWeek, setDateOfTheWeek] = useState(0);
+const DayHeader = () => {
+  const router = useRouter();
+  const { date } = router.query;
+  const [dateDisplay, setDateDisplay] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (isReady) {
-      setCurrentDay(currentDate);
-      setCurrentMonth(currentMonth);
-      setDateOfTheWeek(currentDayOfTheWeek);
+    if (router.isReady) {
+      const day = dayjs(date as string).date();
+      const weekday = dayjs(date as string).weekday();
+      const month = dayjs(date as string).month();
+      startTransition(() => {
+        setDateDisplay(
+          `${dayNames[weekday]}, ${getMonthName(month)} ${getOrdinal(day)} `
+        );
+      });
     }
-  }, [isReady]);
-
-  const dateDisplay = `${dayNames[dayOfTheWeek]}, ${getMonthName(
-    month
-  )} ${getOrdinal(day)} `;
-
-  const getDaysInMonth = (month: number) => {
-    const monthDigit = month + 1 < 10 ? `0${month + 1}` : `${month + 1}`;
-    const daysInMonthString = `2022-${monthDigit}-01`;
-    return dayjs(daysInMonthString).daysInMonth();
-  };
-
-  const handlePreviousChange = () => {
-    setCurrentDay(day - 1);
-    if (day === 1) {
-      setCurrentMonth(month - 1);
-      setCurrentDay(getDaysInMonth(month - 1));
-    }
-    setDateOfTheWeek(dayOfTheWeek - 1);
-    if (dayOfTheWeek === 0) {
-      setDateOfTheWeek(6);
-    }
-  };
-
-  const handleNextChange = () => {
-    setCurrentDay(day + 1);
-    if (day === getDaysInMonth(month)) {
-      setCurrentMonth(month + 1);
-      setCurrentDay(1);
-    }
-    setDateOfTheWeek(dayOfTheWeek + 1);
-    if (dayOfTheWeek === 6) {
-      setDateOfTheWeek(0);
-    }
-  };
-
-  console.log({ day: day, month: month, dayOfTheWeek: dayOfTheWeek });
+  }, [date]);
 
   return (
     <div className="max-w-screen-xl m-auto bg-white">
       <div className="w-full px-2 h-20 flex justify-between items-center">
-        <button onClick={handlePreviousChange}>
+        <Link
+          href={{
+            pathname: `/day/${dayjs(date as string)
+              .subtract(1, "day")
+              .format("YYYY-MM-DD")}`,
+          }}
+        >
           <ArrowLeftIcon className="h-5 w-5 text-sky-700" />
-        </button>
+        </Link>
+        {isPending && "...loading"}
         <p className="text-xl tracking-wider text-center font-sans text-sky-700">
           {dateDisplay}
         </p>
-        <button onClick={handleNextChange}>
+        <Link
+          href={{
+            pathname: `/day/${dayjs(date as string)
+              .add(1, "day")
+              .format("YYYY-MM-DD")}`,
+          }}
+        >
           <ArrowRightIcon className="h-5 w-5 text-sky-700" />
-        </button>
+        </Link>
       </div>
     </div>
   );

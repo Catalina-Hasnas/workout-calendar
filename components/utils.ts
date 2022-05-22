@@ -40,7 +40,11 @@ export const dayNames = [
 ];
 
 export function getOrdinal(n: number) {
-  var s = ["th", "st", "nd", "rd"],
+  let s = ["th", "st", "nd", "rd"],
     v = n % 100;
   return n + (s[(v - 20) % 10] || s[v] || s[0]).toString();
+}
+
+export function getMonthDigit(month: number) {
+  return month + 1 < 10 ? `0${month + 1}` : `${month + 1}`;
 }
