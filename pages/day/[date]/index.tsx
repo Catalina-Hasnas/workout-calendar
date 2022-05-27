@@ -1,11 +1,13 @@
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import DayBody from "../../../components/Day/DayBody/DayBody";
+import DayBody from "../../../components/Day/DayBody/NoWorkoutAdded";
 import DayHeader from "../../../components/Day/DayHeader";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
+import NoWorkoutAdded from "../../../components/Day/DayBody/NoWorkoutAdded";
 import { string } from "yup";
+import WorkoutData from "../../../components/Day/DayBody/WorkoutData";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // const res = await fetch("api/workouts");
@@ -29,7 +31,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false,
+    fallback: true,
   };
 };
 
@@ -41,33 +43,43 @@ export const getStaticProps: GetStaticProps = async (context) => {
   // const data = await res.json();
 
   return {
-    props: { workout: docSnap.data() },
+    props: { workout: docSnap.data() ?? null },
   };
 };
 
-const Day: NextPage = ({ workout }: any) => {
+export interface DayProps {
+  workout: {
+    workoutType: string;
+    subTypeWorkout: string;
+  };
+}
+
+const Day: NextPage<DayProps> = ({ workout }) => {
   const router = useRouter();
   const { date } = router.query;
 
-  console.log(workout);
+  if (router.isFallback) {
+    return <p>Loading...</p>;
+  }
 
-  // const get = async () => {
-  //   const querySnapshot = await getDocs(collection(db, "workouts"));
-  //   let idArr: Record<string, string>[] = [];
-  //   querySnapshot.forEach((doc) => {
-  //     idArr.push({ id: doc.id });
-  //   });
+  const get = async () => {
+    const querySnapshot = await getDocs(collection(db, "workouts"));
 
-  //   const paths = idArr.map((date: Record<string, string>) => {
-  //     return {
-  //       params: {
-  //         date: date.id,
-  //       },
-  //     };
-  //   });
+    // let idArr: Record<string, string>[] = [];
+    // querySnapshot.forEach((doc) => {
+    //   idArr.push({ id: doc.id });
+    // });
 
-  //   console.log(paths);
-  // };
+    // const paths = idArr.map((date: Record<string, string>) => {
+    //   return {
+    //     params: {
+    //       date: date.id,
+    //     },
+    //   };
+    // });
+
+    // console.log(paths);
+  };
 
   // useEffect(() => {
   //   get();
@@ -75,11 +87,20 @@ const Day: NextPage = ({ workout }: any) => {
 
   const [currentDate, setCurrentDate] = useState(date as string);
 
+  let workoutPageBody = <WorkoutData workout={workout} />;
+
+  if (workout === null) {
+    workoutPageBody = <NoWorkoutAdded />;
+  }
+
   return (
     <div className="backgroundPattern min-h-screen">
       <DayHeader key={router.asPath} />
-
-      <DayBody />
+      <div className="max-w-screen-xl m-auto bg-white mt-5">
+        <div className="flex flex-col justify-around items-center p-5">
+          {workoutPageBody}
+        </div>
+      </div>
     </div>
   );
 };
