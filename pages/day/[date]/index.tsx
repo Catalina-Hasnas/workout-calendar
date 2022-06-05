@@ -6,13 +6,10 @@ import DayHeader from "../../../components/Day/DayHeader";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
 import NoWorkoutAdded from "../../../components/Day/DayBody/NoWorkoutAdded";
-import { string } from "yup";
 import WorkoutData from "../../../components/Day/DayBody/WorkoutData";
+import Head from "next/head";
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // const res = await fetch("api/workouts");
-  // const data = await res.json();
-
   const querySnapshot = await getDocs(collection(db, "workouts"));
   let idArr: Record<string, string>[] = [];
   await querySnapshot.forEach((doc) => {
@@ -27,8 +24,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
     };
   });
 
-  console.log(paths);
-
   return {
     paths,
     fallback: true,
@@ -39,8 +34,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const date = context?.params?.date;
   const docRef = doc(db, "workouts", date as string);
   const docSnap = await getDoc(docRef);
-  // const res = await fetch(`api/workouts/${date}`);
-  // const data = await res.json();
 
   return {
     props: { workout: docSnap.data() ?? null },
@@ -62,39 +55,16 @@ const Day: NextPage<DayProps> = ({ workout }) => {
     return <p>Loading...</p>;
   }
 
-  const get = async () => {
-    const querySnapshot = await getDocs(collection(db, "workouts"));
-
-    // let idArr: Record<string, string>[] = [];
-    // querySnapshot.forEach((doc) => {
-    //   idArr.push({ id: doc.id });
-    // });
-
-    // const paths = idArr.map((date: Record<string, string>) => {
-    //   return {
-    //     params: {
-    //       date: date.id,
-    //     },
-    //   };
-    // });
-
-    // console.log(paths);
-  };
-
-  // useEffect(() => {
-  //   get();
-  // }, []);
-
-  const [currentDate, setCurrentDate] = useState(date as string);
-
-  let workoutPageBody = <WorkoutData workout={workout} />;
-
-  if (workout === null) {
-    workoutPageBody = <NoWorkoutAdded />;
-  }
+  const workoutPageBody =
+    workout === null ? <NoWorkoutAdded /> : <WorkoutData workout={workout} />;
 
   return (
     <div className="backgroundPattern min-h-screen">
+      <Head>
+        <title>Workout Day</title>
+        <meta name="description" content="Current day workout" />
+      </Head>
+
       <DayHeader key={router.asPath} />
       <div className="max-w-screen-xl m-auto bg-white mt-5">
         <div className="flex flex-col justify-around items-center p-5">

@@ -1,79 +1,16 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { useRouter } from "next/router";
-import { Fragment, useMemo, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { IFormInput } from "./types";
-
-// export async function getStaticProps() {
-//   const res = await fetch("https://.../posts");
-//   const posts = await res.json();
-
-//   return {
-//     props: {
-//       posts,
-//     },
-//   };
-// }
+import { Fragment, useState } from "react";
+import AddWorkoutForm from "./AddWorkoutForm";
 
 const NoWorkoutAdded = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<IFormInput>();
-
   const [isOpen, setIsOpen] = useState(false);
-
-  const router = useRouter();
-  const { date } = router.query;
-
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
-    fetch(`/api/workouts/${date}`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => console.log(json));
-    setIsOpen(false);
-  };
-
-  const selectedWorkoutType = watch("workoutType");
-
-  const subTypeWorkout = useMemo(() => {
-    switch (selectedWorkoutType) {
-      case "strength":
-        return {
-          options: ["Upper body", "Lower body", "Full body"],
-        };
-      case "cardio":
-        return {
-          options: ["Aerobic", "Dancing", "Hiking", "Swimming"],
-        };
-      case "mobility":
-        return {
-          options: ["Stretching", "Balance"],
-        };
-      case "custom":
-        return {
-          options: [],
-        };
-      default:
-        return {
-          options: [],
-        };
-    }
-  }, [selectedWorkoutType]);
 
   return (
     <>
       <p className="text-6xl p-3"> No workout added on this day </p>
       <button
         onClick={() => setIsOpen(true)}
-        className="py-3 px-6 bg bg-sky-700 text-sky-50"
+        className="py-3 px-6 bg bg-sky-700 text-sky-50 text-center"
       >
         Add a workout
       </button>
@@ -110,47 +47,11 @@ const NoWorkoutAdded = () => {
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title
                     as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900"
+                    className="text-sky-700 text-center font-bold text-xl pb-6"
                   >
                     Add a workout
                   </Dialog.Title>
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <label>Workout type</label>
-                    <select
-                      className={`${
-                        errors.workoutType &&
-                        " focus:border-red-500 focus:ring-red-500 border-red-500"
-                      }`}
-                      {...register("workoutType", {
-                        required: "Workout type is required",
-                      })}
-                    >
-                      <option value="">Select a workout type</option>
-                      <option value="strength">Strength</option>
-                      <option value="cardio">Cardio</option>
-                      <option value="mobility">Mobility</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                    <div>
-                      {errors.workoutType && (
-                        <span className="text-sm text-red-500">
-                          {errors.workoutType.message}
-                        </span>
-                      )}
-                    </div>
-                    {selectedWorkoutType && selectedWorkoutType !== "custom" && (
-                      <select {...register("subTypeWorkout")}>
-                        {subTypeWorkout.options.map((workoutOption) => {
-                          return (
-                            <option value={workoutOption} key={workoutOption}>
-                              {workoutOption}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    )}
-                    <input type="submit" value={"Submit"} />
-                  </form>
+                  <AddWorkoutForm setIsOpen={setIsOpen} />
                 </Dialog.Panel>
               </Transition.Child>
             </div>

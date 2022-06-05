@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getMonthDigit } from "../utils";
 import { IDay } from "./Calendar";
 
-const Day = ({ date, dayOfTheWeek, month }: IDay) => {
+const Day = ({ date, month }: IDay) => {
   const dateDigit = date < 10 ? `0${date}` : date;
   return (
     <Link
